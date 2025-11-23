@@ -112,6 +112,7 @@ public class Ex1 {
             }
         }
         return ans;
+
     }
 	/**
 	 * Given two polynomial functions (p1,p2), a range [x1,x2] and an epsilon eps. This function computes an x value (x1<=x<=x2)
