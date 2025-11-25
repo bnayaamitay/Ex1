@@ -1,6 +1,7 @@
 package assignments;
 
 import java.util.Arrays;
+import java.util.Spliterator;
 
 /**
  * Introduction to Computer Science 2026, Ariel University,
@@ -131,7 +132,6 @@ public class Ex1 {
             if (nextIndex != -1) {
                 if (poly[nextIndex] > 0) ans += " + ";
                 else ans += " - ";
-                poly[nextIndex] = Math.abs(poly[nextIndex]);
             }
         }
         return ans;
@@ -222,11 +222,60 @@ public class Ex1 {
 	 * @param p - a String representing polynomial function.
 	 * @return
 	 */
-	public static double[] getPolynomFromString(String p) {
-		double [] ans = ZERO;//  -1.0x^2 +3.0x +2.0
-
-		return ans;
-	}
+    public static double[] getPolynomFromString(String p) {
+        double[] ans = ZERO;
+        if (p == null) return ans;
+        String[] parts = p.trim().split("\\s+");
+        int maxPower = 0;
+        for (String part : parts) {
+            if (part.contains("x^")) {
+                int power = Integer.parseInt(part.split("x\\^")[1]);
+                if (power > maxPower) maxPower = power;
+            }
+            else if (part.contains("x")) {
+                if (1 > maxPower) maxPower = 1;
+            }
+        }
+        ans = new double[maxPower + 1];
+        for (String part : parts) {
+            double coeff = 0.0;
+            int power = 0;
+            if (part.contains("x^")) {
+                String[] split = part.split("x\\^");
+                String coeffStr = split[0];
+                if (coeffStr.isEmpty() || coeffStr.equals("+")) coeff = 1.0;
+                else if (coeffStr.equals("-")) coeff = -1.0;
+                else coeff = Double.parseDouble(coeffStr);
+                power = Integer.parseInt(split[1]);
+            }
+            else if (part.contains("x")) {
+                String coeffStr = part.replace("x", "");
+                if (coeffStr.isEmpty() || coeffStr.equals("+")) coeff = 1.0;
+                else if (coeffStr.equals("-")) coeff = -1.0;
+                else coeff = Double.parseDouble(coeffStr);
+                power = 1;
+            }
+            else {
+                if (part.isEmpty() || part.equals("+")) {
+                    coeff = 1.0;
+                    power = 0;
+                }
+                else if (part.equals("-")) {
+                    coeff = -1.0;
+                    power = 0;
+                }
+                else {
+                    try {
+                        coeff = Double.parseDouble(part);
+                        power = 0;
+                    }
+                    catch (NumberFormatException e) {return ZERO;}
+                }
+            }
+            ans[power] += coeff;
+        }
+        return ans;
+    }
 	/**
 	 * This function computes the polynomial function which is the sum of two polynomial functions (p1,p2)
 	 * @param p1
