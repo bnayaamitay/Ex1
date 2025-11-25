@@ -66,9 +66,27 @@ public class Ex1 {
 		int lx = xx.length;
 		int ly = yy.length;
 		if(xx!=null && yy!=null && lx==ly && lx>1 && lx<4) {
-		/** add you code below
-
-		/////////////////// */
+		if (lx == 2) {
+            if (xx[0] == xx[1]) {
+            return null;
+            }
+            double m = (yy[0] - yy[1]) /  (xx[0] - xx[1]);
+            double b = yy[0] - m * (xx[0]);
+            ans = new double[] {m, b};
+        }
+        else {
+            double denom = (xx[0] - xx[1]) * (xx[0] - xx[2]) * (xx[1] - xx[2]);
+            if (denom == 0.0) {return null;}
+            double a = (xx[2] * (yy[1] - yy[0]) + xx[1] * (yy[0] - yy[2]) + xx[0] * (yy[2] - yy[1])) / denom;
+            double b = (xx[2]*xx[2] * (yy[0] - yy[1]) + xx[1]*xx[1] * (yy[2] - yy[0]) + xx[0]*xx[0] * (yy[1] - yy[2])) / denom;
+            double c = (xx[1] * xx[2] * (xx[1] - xx[2]) * yy[0] + xx[2] * xx[0] * (xx[2] - xx[0]) * yy[1] + xx[0] * xx[1] * (xx[0] - xx[1]) * yy[2]) / denom;
+            if (a == 0.0) {
+                ans = new double[] {c, b};
+            }
+            else {
+                ans = new double[]{c, b, a};
+            }
+        }
 		}
 		return ans;
 	}
@@ -164,9 +182,17 @@ public class Ex1 {
 	 */
 	public static double length(double[] p, double x1, double x2, int numberOfSegments) {
 		double ans = x1;
-        /** add you code below
-
-         /////////////////// */
+        if (numberOfSegments == 0) {return ans;}
+        ans = 0;
+        double step = Math.abs(x2 - x1)/numberOfSegments;
+        for (int i = 0; i < numberOfSegments; i++) {
+            double xi = x1 + i * step;
+            double xiNext = x1 + (i + 1) * step;
+            double yi = f(p, xi);
+            double yiNext = f(p, xiNext);
+            double segmentLength = Math.sqrt(((yiNext - yi) * (yiNext - yi)) + ((xiNext - xi) * (xiNext - xi)));
+            ans += segmentLength;
+        }
 		return ans;
 	}
 	
@@ -242,7 +268,7 @@ public class Ex1 {
 	public static double[] derivative (double[] po) {
         double [] ans = ZERO;//
         int length = po.length;
-        if (length <= 1) return ZERO;
+        if (length <= 1) return ans;
         else ans = new double[length -1];
         for(int i = 0; i < length -1; i++) {
             ans[i]=po[i + 1] * (i + 1);
