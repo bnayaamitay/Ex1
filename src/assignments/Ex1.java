@@ -28,13 +28,13 @@ public class Ex1 {
 	 */
 	public static double f(double[] poly, double x) {
         double ans = 0;
-		if (poly == null || poly.length == 0) {return ans;}
-        double exponent = 1;
-        for(int i = 0; i < poly.length; i++) {
-            ans += poly[i] * exponent;
-            exponent *= x;
+		if (poly == null || poly.length == 0) {return ans;} // If array is null or empty return 0.
+        double exponent = 1; // Begin with x^0.
+        for(int i = 0; i < poly.length; i++) { // Loop through coefficients.
+            ans += poly[i] * exponent; // Add term to result.
+            exponent *= x; // Update power of x.
         }
-		return ans;
+		return ans; // Return final value.
 	}
 	/** Given a polynomial function (p), a range [x1,x2] and an epsilon eps.
 	 * This function computes an x value (x1<=x<=x2) for which |p(x)| < eps, 
@@ -47,88 +47,93 @@ public class Ex1 {
 	 * @return an x value (x1<=x<=x2) for which |p(x)| < eps.
 	 */
     public static double root_rec(double[] p, double x1, double x2, double eps) {
-        double f1 = f(p, x1);
-        double f2 = f(p, x2);
-        double x12 = (x1 + x2) / 2.0;
-        double f12 = f(p, x12);
-        if (Math.abs(f12) < eps) {return x12;}
-        if (Math.abs(f1) < eps) {return x1;}
-        if (Math.abs(f2) < eps) {return x2;}
-        if (f12 * f1 <= 0) {
-            return root_rec(p, x1, x12, eps);
-        }
-        else {
-            return root_rec(p, x12, x2, eps);
-        }
+        double f1 = f(p, x1); // Calculate function value at x1.
+        double f2 = f(p, x2); // Calculate function value at x2.
+        double x12 = (x1 + x2) / 2.0; // Find midpoint between x1 and x2.
+        double f12 = f(p, x12); // Calculate function value at midpoint.
+        if (Math.abs(f12) < eps) {return x12;} // If midpoint value is close enough to 0 return midpoint.
+        if (Math.abs(f1) < eps) {return x1;} // If value at x1 is close enough to 0 return x.
+        if (Math.abs(f2) < eps) {return x2;} // If value at x2 is close enough to 0 return x2.
+        // If root lies between x1 and midpoint search left side.
+        if (f12 * f1 <= 0) {return root_rec(p, x1, x12, eps);}
+        // Otherwise search right side.
+        else {return root_rec(p, x12, x2, eps);}
     }
 	/**
-	 * This function computes a polynomial representation from a set of 2D points on the polynom.
-	 * The solution is based on: //	http://stackoverflow.com/questions/717762/how-to-calculate-the-vertex-of-a-parabola-given-three-points
-	 * Note: this function only works for a set of points containing up to 3 points, else returns null.
-	 * @param xx
-	 * @param yy
-	 * @return an array of doubles representing the coefficients of the polynom.
-	 */
+     * Computes a polynomial from up to 3 given points.
+     * The solution is based on: //	http://stackoverflow.com/questions/717762/how-to-calculate-the-vertex-of-a-parabola-given-three-points
+     * Works only for 2 or 3 points, otherwise returns null.
+     *
+     * @param xx x-coordinates
+     * @param yy y-coordinates
+     * @return polynomial coefficients
+     */
 	public static double[] PolynomFromPoints(double[] xx, double[] yy) {
-		double [] ans = null;
-		int lx = xx.length;
-		int ly = yy.length;
-		if(xx!=null && yy!=null && lx==ly && lx>1 && lx<4) {
-		if (lx == 2) {
-            if (xx[0] == xx[1]) {
-            return null;
+		double [] ans = null; // Default result.
+        int lx = xx.length; // Length of x array.
+		int ly = yy.length; // Length of y array
+        // Check arrays are not null and same length and size is 2 or 3.
+        if(xx!=null && yy!=null && lx==ly && lx>1 && lx<4) {
+            if (lx == 2) {
+            if (xx[0] == xx[1]) { // If x values are equal return null.
+                return null;
             }
-            double m = (yy[0] - yy[1]) /  (xx[0] - xx[1]);
-            double b = yy[0] - m * (xx[0]);
-            ans = new double[] {m, b};
-        }
+                double m = (yy[0] - yy[1]) /  (xx[0] - xx[1]); // Calculate slope.
+                double b = yy[0] - m * (xx[0]); // Calculate intercept.
+                ans = new double[] {m, b}; // Store line coefficients.
+            }
         else {
-            double denom = (xx[0] - xx[1]) * (xx[0] - xx[2]) * (xx[1] - xx[2]);
+                // Calculate denominator for quadratic.
+                double denom = (xx[0] - xx[1]) * (xx[0] - xx[2]) * (xx[1] - xx[2]);
             if (denom == 0.0) {return null;}
-            double a = (xx[2] * (yy[1] - yy[0]) + xx[1] * (yy[0] - yy[2]) + xx[0] * (yy[2] - yy[1])) / denom;
-            double b = (xx[2]*xx[2] * (yy[0] - yy[1]) + xx[1]*xx[1] * (yy[2] - yy[0]) + xx[0]*xx[0] * (yy[1] - yy[2])) / denom;
-            double c = (xx[1] * xx[2] * (xx[1] - xx[2]) * yy[0] + xx[2] * xx[0] * (xx[2] - xx[0]) * yy[1] + xx[0] * xx[1] * (xx[0] - xx[1]) * yy[2]) / denom;
-            if (a == 0) {
-                ans = new double[] {c, b};
+                // Calculate quadratic coefficients.
+                double a = (xx[2] * (yy[1] - yy[0]) + xx[1] * (yy[0] - yy[2]) + xx[0] * (yy[2] - yy[1])) / denom;
+                double b = (xx[2]*xx[2] * (yy[0] - yy[1]) + xx[1]*xx[1] * (yy[2] - yy[0]) + xx[0]*xx[0] * (yy[1] - yy[2])) / denom;
+                double c = (xx[1] * xx[2] * (xx[1] - xx[2]) * yy[0] + xx[2] * xx[0] * (xx[2] - xx[0]) * yy[1] + xx[0] * xx[1] * (xx[0] - xx[1]) * yy[2]) / denom;
+                if (a == 0) { // If a is zero return linear coefficients.
+                    ans = new double[] {c, b};
             }
             else {
                 ans = new double[]{c, b, a};
             }
         }
 		}
-		return ans;
-	}
-	/** Two polynomials functions are equal if and only if they have the same values f(x) for n+1 values of x,
-	 * where n is the max degree (over p1, p2) - up to an epsilon (aka EPS) value.
-	 * @param p1 first polynomial function
-	 * @param p2 second polynomial function
-	 * @return true iff p1 represents the same polynomial function as p2.
-	 */
-	public static boolean equals(double[] p1, double[] p2) {
-		boolean ans = true;
-        int maxLength = Math.max(p1.length,p2.length);
-        for (int i = 0; i < maxLength; i++) {
-        if (Math.abs(f(p1, i) - f(p2, i)) >= EPS) {
-            return false;
+		return ans; // Return result.
+    }
+    /**
+     * Checks if two polynomials are equal.
+     * They are equal if f(x) values match for n+1 points,
+     * where n is the maximum degree, within tolerance EPS.
+     *
+     * @param p1 first polynomial
+     * @param p2 second polynomial
+     * @return true if p1 and p2 represent the same polynomial
+     */
+    public static boolean equals(double[] p1, double[] p2) {
+		boolean ans = true; // Default answer is true.
+        int maxLength = Math.max(p1.length,p2.length); // Use the longer polynomial length.
+        for (int i = 0; i < maxLength; i++) { // Check values at each point from 0 to maxLength-1.
+            // If difference is greater than EPS, return false.
+            if (Math.abs(f(p1, i) - f(p2, i)) >= EPS) {return false;}
         }
-        }
-		return ans;
-	}
+		return ans; // Return true if all checks passed.
+    }
 
-	/** 
-	 * Computes a String representing the polynomial function.
-	 * For example the array {2,0,3.1,-1.2} will be presented as the following String  "-1.2x^3 +3.1x^2 +2.0"
+	/**
+     * Builds a String representation of a polynomial.
+     * For example the array {2,0,3.1,-1.2} will be presented as the following String  "-1.2x^3 +3.1x^2 +2.0"
 	 * @param poly the polynomial function represented as an array of doubles
 	 * @return String representing the polynomial function:
 	 */
     public static String poly(double[] poly) {
-        String ans = "";
-        if (poly.length == 0) return "0";
-        for (int i = poly.length -1; i >= 0; i--) {
-            if (poly[i] == 0) continue;
-            if (i == 0) ans += poly[i];
-            else if (i == 1) ans += poly[i] + "x";
-            else ans += poly[i] + "x^" + i;
+        String ans = ""; // Start with empty string.
+        if (poly.length == 0) return "0"; // If no coefficients, return 0.
+        for (int i = poly.length -1; i >= 0; i--) { // Loop from highest power down to 0.
+            if (poly[i] == 0) continue; // Skip 0 coefficients.
+            if (i == 0) ans += poly[i]; // Constant term.
+            else if (i == 1) ans += poly[i] + "x"; // Linear term.
+            else ans += poly[i] + "x^" + i; // Higher powers.
+            // Look ahead for next non-zero coefficient.
             int nextIndex = -1;
             for (int j = i -1; j >= 0; j--) {
                 if (poly[j] != 0) {
@@ -136,12 +141,13 @@ public class Ex1 {
                     break;
                 }
             }
+            // Add + or - between terms.
             if (nextIndex != -1) {
                 if (poly[nextIndex] > 0) ans += " + ";
                 else ans += " - ";
             }
         }
-        return ans;
+        return ans; // Return final polynomial string.
     }
 	/**
 	 * Given two polynomial functions (p1,p2), a range [x1,x2] and an epsilon eps. This function computes an x value (x1<=x<=x2)
@@ -154,10 +160,11 @@ public class Ex1 {
 	 * @return an x value (x1<=x<=x2) for which |p1(x) - p2(x)| < eps.
 	 */
 	public static double sameValue(double[] p1, double[] p2, double x1, double x2, double eps) {
-		double ans = x1;
+		double ans = x1; // Default answer.
+        // Arrays for positive and negative polynomial.
         double[] negative;
         double[] positive;
-        if (p1.length >= p2.length) {
+        if (p1.length >= p2.length) { // Choose longer polynomial as positive, shorter as negative
             negative = Arrays.copyOf(p2, p2.length);
             positive = Arrays.copyOf(p1, p1.length);
         }
@@ -165,14 +172,15 @@ public class Ex1 {
             negative = Arrays.copyOf(p1, p1.length);
             positive = Arrays.copyOf(p2, p2.length);
         }
+        // Negate coefficients of the "negative" polynomial
         for (int i = 0; i < negative.length; i++) {
             negative[i] *= (-1);
         }
-        double[] result = add(positive, negative);
-        if (Math.abs(x2 - x1) < eps) {
+        double[] result = add(positive, negative); // Compute difference polynomial.
+        if (Math.abs(x2 - x1) < eps) { // If range is smaller than tolerance, return midpoint.
             return (x1 + x2) / 2;
         }
-        ans = root_rec(result,x1,x2,eps);
+        ans = root_rec(result,x1,x2,eps); // Otherwise, find root of difference polynomial.
 		return ans;
 	}
 	/**
@@ -188,109 +196,121 @@ public class Ex1 {
 	 * @return the length approximation of the function between f(x1) and f(x2).
 	 */
 	public static double length(double[] p, double x1, double x2, int numberOfSegments) {
-		double ans = x1;
-        if (numberOfSegments == 0) {return ans;}
-        ans = 0;
-        double step = Math.abs(x2 - x1)/numberOfSegments;
-        for (int i = 0; i < numberOfSegments; i++) {
+		double ans = x1; // Default.
+        if (numberOfSegments == 0) {return ans;} // If no segments, return x1.
+        ans = 0; // Reset answer to 0.
+        double step = Math.abs(x2 - x1)/numberOfSegments; // Step size along x.
+        for (int i = 0; i < numberOfSegments; i++) { // Loop through each segment.
+            // Current x and next x.
             double xi = x1 + i * step;
             double xiNext = x1 + (i + 1) * step;
+            // Polynomial values at xi and xiNext.
             double yi = f(p, xi);
             double yiNext = f(p, xiNext);
+            // Segment length using distance formula.
             double segmentLength = Math.sqrt(((yiNext - yi) * (yiNext - yi)) + ((xiNext - xi) * (xiNext - xi)));
-            ans += segmentLength;
+            ans += segmentLength; // Add segment length to total.
         }
-		return ans;
-	}
-	
-	/**
-	 * Given two polynomial functions (p1,p2), a range [x1,x2] and an integer representing the number of Trapezoids between the functions (number of samples in on each polynom).
-	 * This function computes an approximation of the area between the polynomial functions within the x-range.
-	 * The area is computed using Riemann's like integral (https://en.wikipedia.org/wiki/Riemann_integral)
-	 * @param p1 - first polynomial function
-	 * @param p2 - second polynomial function
-	 * @param x1 - minimal value of the range
-	 * @param x2 - maximal value of the range
-	 * @param numberOfTrapezoid - a natural number representing the number of Trapezoids between x1 and x2.
-	 * @return the approximated area between the two polynomial functions within the [x1,x2] range.
-	 */
+		return ans; // Return total arc length.
+    }
+
+    /**
+     * Approximates the area between two polynomials (p1, p2)
+     * over the range [x1, x2] using the trapezoid rule.
+     *
+     * @param p1 first polynomial
+     * @param p2 second polynomial
+     * @param x1 start of range
+     * @param x2 end of range
+     * @param numberOfTrapezoid number of trapezoids (samples)
+     * @return approximated area between p1 and p2
+     */
     public static double area(double[] p1, double[] p2, double x1, double x2, int numberOfTrapezoid) {
-        double ans = 0;
-        double h = (x2 - x1) / numberOfTrapezoid;
-        for (int i = 0; i < numberOfTrapezoid; i++) {
+        double ans = 0; // Initialize result.
+        double h = (x2 - x1) / numberOfTrapezoid; // Step size.
+        for (int i = 0; i < numberOfTrapezoid; i++) { // Loop over trapezoids.
+            // Current x and next x
             double xi = x1 + i * h;
             double xiNext = xi + h;
+            // Difference between polynomials at xi and xiNext
             double d1 = f(p1, xi) - f(p2, xi);
             double d2 = f(p1, xiNext) - f(p2, xiNext);
-            if (d1 * d2 < 0) {
-                int maxLength = Math.max(p1.length, p2.length);
+            if (d1 * d2 < 0) { // If the functions cross between xi and xiNext.
+                int maxLength = Math.max(p1.length, p2.length); // Build array for -p2.
                 double[] negative = new double[maxLength];
                 for (int j = 0; j < p2.length; j++) {
                     negative[j] = -p2[j];
                 }
-                double[] diff = add(p1, negative);
-                double root = root_rec(diff, xi, xiNext, EPS);
-                double dRoot = f(p1, root) - f(p2, root);
-                ans += (Math.abs(d1) + Math.abs(dRoot)) * (root - xi) / 2.0;
-                ans += (Math.abs(dRoot) + Math.abs(d2)) * (xiNext - root) / 2.0;
-            } else {
+                double[] diff = add(p1, negative); // Compute difference polynomial p1 - p2.
+                double root = root_rec(diff, xi, xiNext, EPS); // Find root (intersection point) between xi and xiNext.
+                double dRoot = f(p1, root) - f(p2, root); // Difference at root.
+                ans += (Math.abs(d1) + Math.abs(dRoot)) * (root - xi) / 2.0;  // Add area from xi to root.
+                ans += (Math.abs(dRoot) + Math.abs(d2)) * (xiNext - root) / 2.0; // Add area from root to xiNext.
+            } else { // Normal trapezoid area if no crossing.
                 ans += (Math.abs(d1) + Math.abs(d2)) * h / 2.0;
             }
         }
-        return roundTo4Decimal(ans);
+        return roundTo4Decimal(ans); // Round result to 4 decimals.
     }
-
+    /**
+     * Rounds a number to 4 decimal places.
+     * If the 3rd decimal digit is 4 or less, it further rounds to 2 decimal places.
+     *
+     * @param num the input number
+     * @return the rounded number
+     */
     public static double roundTo4Decimal(double num) {
-        double round = ((int)(num * 10000)) / 10000.0;
-        int decimal3 = (int)(round * 1000) % 10;
-        if (decimal3 <= 2) {
-            round = ((int)(round * 100)) / 100.0;
+        double round = ((int)(num * 10000)) / 10000.0; // Truncate to 4 decimals.
+        int decimal3 = (int)(round * 1000) % 10; // Get 3rd decimal digit.
+        if (decimal3 <= 4) { // If digit is less than or equal to 4, round to 2 decimals.
+                round = ((int)(round * 100)) / 100.0;
         }
-        return round;
+        return round; // Return result
     }
 
     /**
-	 * This function computes the array representation of a polynomial function from a String
-	 * representation. Note:given a polynomial function represented as a double array,
-	 * getPolynomFromString(poly(p)) should return an array equals to p.
-	 * 
-	 * @param p - a String representing polynomial function.
-	 * @return
-	 */
+     * Converts a polynomial string into an array of coefficients.
+     * Each array index represents the power of x, and the value is its coefficient.
+     *
+     * @param p a String representing a polynomial function
+     * @return a double array of coefficients for the polynomial
+     */
     public static double[] getPolynomFromString(String p) {
-        double[] ans = ZERO;
-        if (p == null) return ans;
-        String[] parts = p.trim().split("\\s+");
+        double[] ans = ZERO;  // Start with a default result.
+        if (p == null) return ans; // If the input string is null, return ZERO.
+        String[] parts = p.trim().split("\\s+"); // Split the string into parts by whitespace.
+        // Track the highest power of x found
         int maxPower = 0;
-        for (String part : parts) {
-            if (part.contains("x^")) {
+        for (String part : parts) { // Loop1- find the maximum power in the polynomial.
+            if (part.contains("x^")) {  // Extract the power after "x^".
                 int power = Integer.parseInt(part.split("x\\^")[1]);
                 if (power > maxPower) maxPower = power;
             }
             else if (part.contains("x")) {
-                if (1 > maxPower) maxPower = 1;
+                if (1 > maxPower) maxPower = 1; // If it only contains "x", the power is 1.
             }
         }
-        ans = new double[maxPower + 1];
-        for (String part : parts) {
-            double coeff = 0.0;
-            int power = 0;
-            if (part.contains("x^")) {
+        ans = new double[maxPower + 1]; // Create the result array with size = maxPower + 1.
+        for (String part : parts) { // Loop2- parse each part and fill coefficients.
+            double coeff = 0.0; // coefficient value.
+            int power = 0; // power of x.
+            if (part.contains("x^")) { // If the term like "3x^2" or "-x^4".
                 String[] split = part.split("x\\^");
                 String coeffStr = split[0];
+                // Handle missing or sign-only coefficients.
                 if (coeffStr.isEmpty() || coeffStr.equals("+")) coeff = 1.0;
                 else if (coeffStr.equals("-")) coeff = -1.0;
                 else coeff = Double.parseDouble(coeffStr);
-                power = Integer.parseInt(split[1]);
+                power = Integer.parseInt(split[1]); // Parse the power after "^".
             }
-            else if (part.contains("x")) {
+            else if (part.contains("x")) { // If the term is "x" or "-x".
                 String coeffStr = part.replace("x", "");
                 if (coeffStr.isEmpty() || coeffStr.equals("+")) coeff = 1.0;
                 else if (coeffStr.equals("-")) coeff = -1.0;
                 else coeff = Double.parseDouble(coeffStr);
                 power = 1;
             }
-            else {
+            else { // If the term is a constant (no x).
                 if (part.isEmpty() || part.equals("+")) {
                     coeff = 1.0;
                     power = 0;
@@ -300,54 +320,61 @@ public class Ex1 {
                     power = 0;
                 }
                 else {
-                    try {
+                    try { // Try parsing a number, otherwise return ZERO.
                         coeff = Double.parseDouble(part);
                         power = 0;
                     }
-                    catch (NumberFormatException e) {return ZERO;}
+                    catch (NumberFormatException e) { return ZERO; }
                 }
             }
-            ans[power] += coeff;
+            ans[power] += coeff; // Add the coefficient to the correct power index.
         }
-        return ans;
+        return ans; // Return the final array of coefficients.
     }
 	/**
-	 * This function computes the polynomial function which is the sum of two polynomial functions (p1,p2)
-	 * @param p1
-	 * @param p2
-	 * @return
-	 */
+     * Adds two polynomials p1 and p2.
+     * Each polynomial is stored in an array where p[i] is the coefficient of x^i.
+     * The function returns a new array with the coefficients of the sum polynomial.
+     *
+     * @param p1 coefficients of the first polynomial
+     * @param p2 coefficients of the second polynomial
+     * @return coefficients of the resulting polynomial after addition
+     */
     public static double[] add(double[] p1, double[] p2) {
-        int maxLength = Math.max(p1.length,p2.length);
-        double[] result = new double[maxLength];
-        for(int i=0;i < maxLength;i++) {
-            double a = 0, b = 0;
-            if(i< p1.length) a=p1[i];
-            if(i< p2.length) b=p2[i];
-            result[i] = a + b;
+        int maxLength = Math.max(p1.length,p2.length); // Find the maximum length.
+        double[] result = new double[maxLength]; // Create a result array with that maximum length.
+        for(int i=0;i < maxLength;i++) { // Loop through all positions up to the longest polynomial.
+            double a = 0, b = 0; // Default coefficients are 0 if index is out of bounds.
+            if(i< p1.length) a=p1[i]; // Take coefficient from p1 if it exists.
+            if(i< p2.length) b=p2[i]; // Take coefficient from p2 if it exists.
+            result[i] = a + b; // Add the two coefficients together.
         }
-        return result;
+        return result; // Return the coefficients of the sum polynomial.
     }
 	/**
-	 * This function computes the polynomial function which is the multiplication of two polynoms (p1,p2)
-	 * @param p1
-	 * @param p2
-	 * @return
+	 * Multiplies two polynomials (p1 and p2).
+     * Each polynomial is stored in an array where p[i] is the coefficient of x^i.
+     * The function returns a new array with the coefficients of the product polynomial.
+     *
+     * @param p1 coefficients of the first polynomial
+     * @param p2 coefficients of the second polynomial
+     * @return coefficients of the resulting polynomial after multiplication
 	 */
     public static double[] mul(double[] p1, double[] p2) {
-        double[] result = new double[p1.length + p2.length -1];
-        for (int i = 0; i < p1.length; i++) {
-            for (int j = 0; j < p2.length; j++) {
-                result[i + j] += p1[i] * p2[j];
+        double[] result = new double[p1.length + p2.length -1]; // The array size is p1.length + p2.length - 1.
+        for (int i = 0; i < p1.length; i++) { // Loop through all coefficients of the first polynomial.
+            for (int j = 0; j < p2.length; j++) { // Loop through all coefficients of the second polynomial.
+                result[i + j] += p1[i] * p2[j]; // Multiply coefficients and add to the correct position (i+j)
             }
         }
-        return result;
+        return result; // Return the coefficients of the product polynomial.
     }
 
 	/**
      * This function calculates the derivative of a polynomial.
      * The polynomial is stored in an array where po[i] is the
      * coefficient of x^i.
+     *
      * @param po the array of polynomial coefficients.
 	 * @return ans, a new array with the coefficients of the derivative.
 	 */
