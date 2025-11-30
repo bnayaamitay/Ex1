@@ -82,7 +82,7 @@ public class Ex1 {
             }
                 double m = (yy[0] - yy[1]) /  (xx[0] - xx[1]); // Calculate slope.
                 double b = yy[0] - m * (xx[0]); // Calculate intercept.
-                ans = new double[] {m, b}; // Store line coefficients.
+                ans = new double[] {b, m}; // Store line coefficients.
             }
         else {
                 // Calculate denominator for quadratic.
